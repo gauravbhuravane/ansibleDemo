@@ -1,0 +1,44 @@
+---
+- name: Deploy NodeJS Web Application
+  hosts: localhost
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: Ensure Node.js is installed
+      apt:
+        name: nodejs
+        state: present
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: Ensure npm is installed
+      apt:
+        name: npm
+        state: present
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: Create application directory
+      file:
+        path: /opt/nodeapp
+        state: directory
+        mode: '0755'
+
+    - name: Create index.js with welcome message
+      copy:
+        dest: /opt/nodeapp/index.js
+        content: |
+          const http = require('http');
+          const port = 3000;
+          const server = http.createServer((req, res) => {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/plain');
+            res.end('Welcome to NodeJS App!\n');
+          });
+          server.listen(port, () => {
+            console.log(`Server running at http://localhost:${port}/`);
+          });
+
+    - name: Run NodeJS app in background
+      shell: "nohup node /opt/nodeapp/index.js &"
+      args:
+        chdir: /opt/nodeapp
