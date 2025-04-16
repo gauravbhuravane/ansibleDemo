@@ -1,0 +1,8 @@
+---
+- name: Print Hello World using Pull Moddel
+  hosts: localhost
+  gather_facts: no
+  tasks:
+  	- name: Print Hello World
+ 	  debug:
+	     msg: "Hello, World from Pull Model!"
